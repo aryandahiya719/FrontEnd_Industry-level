@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #F4B740;
+  --color-secondary: #8B2E0F;
+  --color-app-bg: #FFF3E0;
+  --color-card-bg: #FFFFFF;
+
+  --font-display: "Fredoka", sans-serif;
+  --font-body: "Nunito", sans-serif;
+}
+
+body {
+  background: linear-gradient(160deg, var(--color-app-bg) 0%, #FFF8EF 50%, var(--color-app-bg) 100%);
+  background-attachment: fixed;
+  color: var(--color-secondary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@utility bg-subtle-pattern {
+  background-image: radial-gradient(var(--color-secondary) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+}
+
+@media (pointer: fine) {
+  *:not(input):not(textarea) {
+    cursor: none !important;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+@utility btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #ffc84d 50%, #f4b740 100%);
+  background-size: 200% auto;
+  color: var(--color-secondary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px; /* pill shape */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px -5px rgba(244, 183, 64, 0.5), 0 0 20px rgba(244, 183, 64, 0.4);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+}
+
+@utility card-base {
+  background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px -10px rgb(139 46 15 / 0.12), 0 0 20px -5px rgb(139 46 15 / 0.05); /* Richer foundational depth */
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 30px 60px -15px rgb(139 46 15 / 0.25), 0 10px 30px -10px rgb(244 183 64 / 0.2); /* Warm secondary glow depth */
+  }
+}
+
+@utility heading-display {
+  font-family: var(--font-display);
+  font-weight: 800; /* Extra bold */
+  color: var(--color-secondary);
+  line-height: 1.1;
+  letter-spacing: -0.04em; /* Tight tracking for modern look */
+}
