@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Banknote, User, Phone, MapPin, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Smartphone, Banknote, User, Phone, MapPin, CheckCircle, ArrowLeft, Table } from 'lucide-react';
 import useCartStore from '../store/useCartStore';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -12,7 +12,16 @@ const CheckoutPage = () => {
   const total = subtotal + deliveryFee;
   const navigate = useNavigate();
   
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [selectedTable, setSelectedTable] = useState(null);
+
+  useEffect(() => {
+    // BINDING: Check if a table was selected during this session
+    const tableId = localStorage.getItem("current_selected_table");
+    if (tableId) {
+      setSelectedTable(tableId);
+    }
+  }, []);
 
   const handlePlaceOrder = (e) => {
     e.preventDefault();
@@ -20,27 +29,36 @@ const CheckoutPage = () => {
     
     const formData = new FormData(e.target);
     const newOrder = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
+      id: `#ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       customer: {
         name: formData.get('fullName'),
         phone: formData.get('phone'),
         address: formData.get('address'),
       },
       paymentMethod,
-      items,
+      items: items.map(item => ({ name: item.name, price: item.price, qty: item.quantity })),
       total,
+      status: 'Pending',
+      tableId: selectedTable || null,
     };
 
-    const existingOrders = JSON.parse(localStorage.getItem('cremy_orders') || '[]');
-    localStorage.setItem('cremy_orders', JSON.stringify([...existingOrders, newOrder]));
+    if (paymentMethod === 'upi') {
+      // STAGING: Save the order to sessionStorage and go to Payment page
+      sessionStorage.setItem('staged_order', JSON.stringify(newOrder));
+      navigate('/payment', { state: { total } });
+    } else {
+      // IMMEDIATE: Save the order to localStorage (Unified key: "orders")
+      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      localStorage.setItem('orders', JSON.stringify([...existingOrders, newOrder]));
 
-    // Simulate order placement
-    toast.success('Order placed successfully', {
-      icon: '🎉',
-    });
-    clearCart();
-    navigate('/');
+      // CLEANUP: Clear the session-specific table selection
+      localStorage.removeItem("current_selected_table");
+
+      toast.success('Order placed successfully!', { icon: '🎉' });
+      clearCart();
+      navigate('/user'); 
+    }
   };
 
   if (items.length === 0) {
@@ -70,10 +88,27 @@ const CheckoutPage = () => {
       </motion.h1>
 
       <form onSubmit={handlePlaceOrder} className="flex flex-col lg:flex-row gap-12">
-        {/* Left Side: Form & Payment */}
         <div className="flex-1 space-y-10">
           
-          {/* Customer Details */}
+          {selectedTable && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-emerald-50 border-2 border-emerald-100 p-6 rounded-[2rem] flex items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-emerald-500 shadow-sm">
+                  <Table className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600/70">Dine-in Reservation</p>
+                  <p className="text-xl font-bold text-emerald-900">Assigned to Table #{selectedTable}</p>
+                </div>
+              </div>
+              <Link to="/tables" className="text-xs font-black text-emerald-600 uppercase border-b-2 border-emerald-200">Change</Link>
+            </motion.div>
+          )}
+
           <motion.section 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -99,7 +134,6 @@ const CheckoutPage = () => {
             </div>
           </motion.section>
 
-          {/* Payment Method */}
           <motion.section 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -110,35 +144,36 @@ const CheckoutPage = () => {
               <span className="w-8 h-8 rounded-full bg-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] flex items-center justify-center text-sm font-bold">2</span>
               Payment Method
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className={`relative cursor-pointer border-2 rounded-2xl p-6 flex flex-col items-center gap-4 transition-all duration-300 ${paymentMethod === 'cod' ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/5 scale-[1.02]' : 'border-transparent bg-[color:var(--color-app-bg)]/50 hover:bg-[color:var(--color-app-bg)]'}`}>
-                <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} className="hidden" />
-                <Banknote className={`w-8 h-8 transition-colors ${paymentMethod === 'cod' ? 'text-[color:var(--color-primary)]' : 'text-[color:var(--color-secondary)]/40'}`} />
-                <span className="font-bold text-center">Cash on Delivery</span>
-                {paymentMethod === 'cod' && <CheckCircle className="absolute top-4 right-4 text-[color:var(--color-primary)] w-5 h-5" />}
-              </label>
 
-              <label className={`relative cursor-pointer border-2 rounded-2xl p-6 flex flex-col items-center gap-4 transition-all duration-300 ${paymentMethod === 'card' ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/5 scale-[1.02]' : 'border-transparent bg-[color:var(--color-app-bg)]/50 hover:bg-[color:var(--color-app-bg)]'}`}>
-                <input type="radio" name="payment" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="hidden" />
-                <CreditCard className={`w-8 h-8 transition-colors ${paymentMethod === 'card' ? 'text-[color:var(--color-primary)]' : 'text-[color:var(--color-secondary)]/40'}`} />
-                <span className="font-bold text-center">Credit Card</span>
-                {paymentMethod === 'card' && <CheckCircle className="absolute top-4 right-4 text-[color:var(--color-primary)] w-5 h-5" />}
-              </label>
+            {/* TAB-STYLE TOGGLE */}
+            <div className="bg-[color:var(--color-app-bg)] p-2 rounded-3xl flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('upi')}
+                className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-bold transition-all ${paymentMethod === 'upi' ? 'bg-[color:var(--color-primary)] text-[color:var(--color-secondary)] shadow-lg' : 'text-[color:var(--color-secondary)]/40 hover:bg-white/50'}`}
+              >
+                <Smartphone className="w-5 h-5" />
+                UPI Payment
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('cod')}
+                className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-bold transition-all ${paymentMethod === 'cod' ? 'bg-[color:var(--color-primary)] text-[color:var(--color-secondary)] shadow-lg' : 'text-[color:var(--color-secondary)]/40 hover:bg-white/50'}`}
+              >
+                <Banknote className="w-5 h-5" />
+                Cash on Delivery
+              </button>
             </div>
-            {paymentMethod === 'card' && (
-               <motion.div 
-                 initial={{ opacity: 0, height: 0 }}
-                 animate={{ opacity: 1, height: 'auto' }}
-                 className="mt-6 p-4 bg-[color:var(--color-app-bg)]/50 rounded-xl text-sm font-bold text-center opacity-70 border border-dashed border-[color:var(--color-secondary)]/20"
-               >
-                 (Credit Card UI active for demonstration - No real processing will occur)
-               </motion.div>
-            )}
+
+            <p className="mt-6 text-xs font-bold text-slate-400 px-4">
+              {paymentMethod === 'upi' 
+                ? "You'll be redirected to a secure UPI portal to complete your transaction."
+                : "Pay with cash when your delicious food arrives at your doorstep."}
+            </p>
           </motion.section>
 
         </div>
 
-        {/* Right Side: Order Summary */}
         <div className="w-full lg:w-[400px] shrink-0">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -149,11 +184,6 @@ const CheckoutPage = () => {
             <h2 className="heading-display text-2xl uppercase mb-6 pb-6 border-b-2 border-dashed border-[color:var(--color-secondary)]/10">Order Summary</h2>
             
             <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              <style dangerouslySetInnerHTML={{__html: `
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 4px; }
-              `}} />
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center gap-4 group">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -166,7 +196,7 @@ const CheckoutPage = () => {
                     </div>
                   </div>
                   <div className="font-[family-name:var(--font-display)] font-bold">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{(item.price * item.quantity).toFixed(2)}
                   </div>
                 </div>
               ))}
@@ -175,17 +205,17 @@ const CheckoutPage = () => {
             <div className="space-y-3 pt-6 border-t-2 border-dashed border-[color:var(--color-secondary)]/10 mb-6">
               <div className="flex justify-between items-center text-sm">
                 <span className="font-bold opacity-70">Subtotal</span>
-                <span className="font-bold font-[family-name:var(--font-display)]">${subtotal.toFixed(2)}</span>
+                <span className="font-bold font-[family-name:var(--font-display)]">₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="font-bold opacity-70">Delivery Fee</span>
-                <span className="font-bold font-[family-name:var(--font-display)]">${deliveryFee.toFixed(2)}</span>
+                <span className="font-bold font-[family-name:var(--font-display)]">₹{deliveryFee.toFixed(2)}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-end mb-8 pt-6 border-t border-[color:var(--color-secondary)]/10">
               <span className="font-bold tracking-widest uppercase text-sm">Total</span>
-              <span className="text-4xl font-[family-name:var(--font-display)] text-[color:var(--color-primary)] drop-shadow-sm">${total.toFixed(2)}</span>
+              <span className="text-4xl font-[family-name:var(--font-display)] text-[color:var(--color-primary)] drop-shadow-sm">₹{total.toFixed(2)}</span>
             </div>
 
             <motion.button 
@@ -194,7 +224,7 @@ const CheckoutPage = () => {
               type="submit"
               className="w-full text-lg py-4 flex items-center justify-center gap-3 bg-[color:var(--color-secondary)] text-white hover:bg-[color:var(--color-primary)] hover:text-[color:var(--color-secondary)] transition-colors duration-300 rounded-full uppercase font-bold tracking-widest font-[family-name:var(--font-display)] shadow-md"
             >
-              Place Order
+              {paymentMethod === 'upi' ? 'Continue to Pay' : 'Place Order'}
               <CheckCircle className="w-5 h-5" />
             </motion.button>
             <p className="text-center text-xs opacity-50 mt-4 font-bold">By placing this order, you agree to our awesome terms.</p>

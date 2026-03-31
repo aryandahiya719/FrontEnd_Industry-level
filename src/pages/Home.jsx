@@ -6,6 +6,7 @@ import Menu from '../components/menu/Menu';
 import Promo from '../components/offers/Promo';
 import Cta from '../components/cta/Cta';
 import PromoCards from '../components/offers/PromoCards';
+import Location from '../components/location/Location';
 import FinalCta from '../components/cta/FinalCta';
 
 const Home = () => {
@@ -28,6 +29,7 @@ const Home = () => {
         <FeaturedCards />
         <Cta />
         <PromoCards />
+        <Location />
         <Promo />
         <FinalCta />
       </div>

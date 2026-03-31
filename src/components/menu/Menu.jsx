@@ -4,7 +4,9 @@ import toast from 'react-hot-toast';
 import useCartStore from '../../store/useCartStore';
 
 const Menu = () => {
-  const [foods, setFoods] = useState([]);
+  const [foods, setFoods] = useState(() => {
+    return JSON.parse(localStorage.getItem("foods")) || [];
+  });
   const [activeCategory, setActiveCategory] = useState('All');
   const [flyingItems, setFlyingItems] = useState([]);
   const addItem = useCartStore((state) => state.addItem);
@@ -20,9 +22,12 @@ const Menu = () => {
   ];
 
   useEffect(() => {
-    import('../../data/foods.json').then((module) => {
-      setFoods(module.default);
-    });
+    if (foods.length === 0) {
+      import('../../data/foods.json').then((module) => {
+        setFoods(module.default);
+        localStorage.setItem("foods", JSON.stringify(module.default));
+      });
+    }
   }, []);
 
   const filteredFoods = activeCategory === 'All' 
@@ -158,7 +163,7 @@ const Menu = () => {
                 
                 <div className="flex items-center justify-between mt-auto pt-4 border-t-2 border-dashed border-[color:var(--color-secondary)]/10">
                    <span className="text-2xl font-[family-name:var(--font-display)] text-[color:var(--color-secondary)] font-bold drop-shadow-sm">
-                     ${item.price.toFixed(2)}
+                     ₹{item.price.toFixed(2)}
                    </span>
                    {/* Minimal visual placeholder since primary button handles add to cart */}
                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[color:var(--color-app-bg)] text-[color:var(--color-secondary)]/40 font-bold group-hover:bg-[color:var(--color-primary)] group-hover:text-[color:var(--color-secondary)] transition-colors duration-300">

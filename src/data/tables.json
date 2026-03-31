@@ -1,0 +1,14 @@
+[
+  { "id": 1, "seats": 2, "status": "available" },
+  { "id": 2, "seats": 4, "status": "available" },
+  { "id": 3, "seats": 4, "status": "booked" },
+  { "id": 4, "seats": 6, "status": "available" },
+  { "id": 5, "seats": 2, "status": "available" },
+  { "id": 6, "seats": 4, "status": "available" },
+  { "id": 7, "seats": 2, "status": "booked" },
+  { "id": 8, "seats": 6, "status": "available" },
+  { "id": 9, "seats": 4, "status": "available" },
+  { "id": 10, "seats": 4, "status": "available" },
+  { "id": 11, "seats": 2, "status": "available" },
+  { "id": 12, "seats": 6, "status": "booked" }
+]

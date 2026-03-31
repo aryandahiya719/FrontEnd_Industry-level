@@ -124,20 +124,29 @@ const Hero = () => {
             />
           </div>
           
-          {/* CTA Button overlapping the bottom edge */}
+          {/* CTA Buttons overlapping the bottom edge */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-full flex justify-center z-40"
+            className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-full flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 z-40 px-4"
           >
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="btn-primary text-xl md:text-2xl shadow-[0_20px_40px_rgba(244,183,64,0.5)] hover:shadow-[0_25px_50px_rgba(244,183,64,0.7)] px-14 py-6"
+              className="btn-primary text-lg md:text-2xl shadow-[0_20px_40px_rgba(244,183,64,0.5)] hover:shadow-[0_25px_50px_rgba(244,183,64,0.7)] px-10 md:px-14 py-4 md:py-6 w-full md:w-auto"
             >
               Order Now
             </motion.button>
+
+            <motion.a 
+              href="#location"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-[color:var(--color-secondary)] text-white text-base md:text-lg rounded-full px-10 md:px-12 py-4 md:py-6 shadow-2xl hover:bg-black transition-all font-black uppercase tracking-widest border border-white/20 w-full md:w-auto text-center"
+            >
+              Find Us
+            </motion.a>
           </motion.div>
         </motion.div>
 

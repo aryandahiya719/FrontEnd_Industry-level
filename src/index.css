@@ -79,3 +79,32 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
   letter-spacing: -0.04em; /* Tight tracking for modern look */
 }
+
+@utility admin-card {
+  background: white;
+  border-radius: 2.5rem;
+  padding: 2rem;
+  border: 1px solid rgba(139, 46, 15, 0.05);
+  box-shadow: 
+    0 4px 6px -1px rgba(139, 46, 15, 0.02), 
+    0 10px 15px -3px rgba(139, 46, 15, 0.03),
+    0 20px 25px -5px rgba(139, 46, 15, 0.04);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 10px 15px -1px rgba(139, 46, 15, 0.04), 
+      0 20px 25px -5px rgba(139, 46, 15, 0.06),
+      0 30px 50px -10px rgba(139, 46, 15, 0.08);
+  }
+}
+
+@utility admin-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #a0aec0; /* Slate-400 equivalent */
+  margin-bottom: 0.25rem;
+}

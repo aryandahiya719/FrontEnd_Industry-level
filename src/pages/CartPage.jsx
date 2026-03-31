@@ -63,7 +63,7 @@ const CartPage = () => {
                     <h3 className="heading-display text-2xl mb-1 truncate pr-8">{item.name}</h3>
                     <p className="text-[color:var(--color-secondary)]/60 font-bold text-sm mb-4 line-clamp-1">{item.description || item.category}</p>
                     <div className="text-2xl font-[family-name:var(--font-display)] font-bold text-[color:var(--color-secondary)]">
-                      ${item.price.toFixed(2)}
+                      ₹{item.price.toFixed(2)}
                     </div>
                   </div>
 
@@ -113,11 +113,11 @@ const CartPage = () => {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center text-lg">
                   <span className="font-bold opacity-70">Subtotal</span>
-                  <span className="font-[family-name:var(--font-display)] font-bold">${subtotal.toFixed(2)}</span>
+                  <span className="font-[family-name:var(--font-display)] font-bold">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center text-lg">
                   <span className="font-bold opacity-70">Delivery Fee</span>
-                  <span className="font-[family-name:var(--font-display)] font-bold">${deliveryFee.toFixed(2)}</span>
+                  <span className="font-[family-name:var(--font-display)] font-bold">₹{deliveryFee.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -125,7 +125,7 @@ const CartPage = () => {
                 <div className="flex justify-between items-end">
                   <span className="font-bold uppercase tracking-wider text-sm opacity-70">Total</span>
                   <span className="text-4xl font-[family-name:var(--font-display)] font-bold text-[color:var(--color-primary)] drop-shadow-sm">
-                    ${total.toFixed(2)}
+                    ₹{total.toFixed(2)}
                   </span>
                 </div>
               </div>
